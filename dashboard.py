@@ -7,12 +7,9 @@ import seaborn as sns
 day_df = pd.read_csv('data/day.csv')
 hour_df = pd.read_csv('data/hour.csv')
 
-# Menggabungkan kedua tabel
-bikesharing_df = day_df.merge(hour_df, on='dteday', how='inner', suffixes=('_day', '_hour'))
-
 # Menampilkan data penyewaan sepeda
-avg_workday = bikesharing_df.groupby('workingday_day')['cnt_day'].mean()
-avg_weekday = bikesharing_df.groupby('weekday_day')['cnt_day'].mean()
+avg_workday = day_df.groupby('workingday')['cnt'].mean()
+avg_weekday = day_df.groupby('weekday')['cnt'].mean()
 
 labels_workday = ['Hari Kerja', 'Hari Libur']
 labels_weekday = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
@@ -41,14 +38,14 @@ weathersit_labels = {
     3: 'Hujan'
 }
 
-bikesharing_df['weathersit_label'] = bikesharing_df['weathersit_day'].map(weathersit_labels)
-avg_weather = bikesharing_df.groupby('weathersit_label')['cnt_day'].mean().reset_index()
+day_df['weathersit_label'] = day_df['weathersit'].map(weathersit_labels)
+avg_weather = day_df.groupby('weathersit_label')['cnt'].mean().reset_index()
 
 st.write("## Rata-rata Penyewaan Sepeda berdasarkan Kondisi Cuaca")
 st.write(avg_weather)
 
 plt.figure(figsize=(10, 7))
-plt.bar(avg_weather['weathersit_label'], avg_weather['cnt_day'], color='skyblue')
+plt.bar(avg_weather['weathersit_label'], avg_weather['cnt'], color='skyblue')
 
 plt.title('Rata-rata Jumlah Pengguna Sepeda berdasarkan Kondisi Cuaca')
 plt.xlabel('Kondisi Cuaca')
@@ -64,13 +61,13 @@ st.pyplot(plt)
 # Menampilkan data penggunaan sepeda (terdaftar dan tidak terdaftar)
 st.write("## Penggunaan Sepeda Terdaftar dan Tidak Terdaftar")
 
-total_terdaftar = bikesharing_df['registered_day'].sum()
-total_tidak_terdaftar = bikesharing_df['casual_day'].sum()
+total_terdaftar = day_df['registered'].sum()
+total_tidak_terdaftar = day_df['casual'].sum()
 
 st.write("Total sewa sepeda (terdaftar):", total_terdaftar)
 st.write("Total sewa sepeda (tidak terdaftar):", total_tidak_terdaftar)
 
-cnt_bikesharing = [bikesharing_df['registered_day'].sum(), bikesharing_df['casual_day'].sum()]
+cnt_bikesharing = [day_df['registered'].sum(), day_df['casual'].sum()]
 
 labels = ['Terdaftar', 'Tidak Terdaftar']
 
